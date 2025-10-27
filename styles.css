@@ -2,7 +2,8 @@
 
 /* === ИСПРАВЛЕНИЕ ДЛЯ MOBILE VIEWPORT === */
 html, body {
-    height: 100%;
+    /* ИЗМЕНЕНО: Используем svh для корректной работы на iOS */
+    min-height: 100svh; 
     margin: 0;
     padding: 0;
 }
@@ -229,6 +230,14 @@ body {
     background-repeat: no-repeat;
 }
 
+/* === ДОБАВЛЕНО: Статичные иконки для мобильной версии и как fallback === */
+#menu-1 .icon { background-image: url('media/01DEMOREELS/01_001.png'); }
+#menu-2 .icon { background-image: url('media/02PRODUCT/02_001.png'); }
+#menu-3 .icon { background-image: url('media/03FRIENDS/03_001.png'); }
+#menu-4 .icon { background-image: url('media/04INTERESTING/04_001.png'); }
+#menu-5 .icon { background-image: url('media/05CONTACTS/05_001.png'); }
+/* === КОНЕЦ ДОБАВЛЕНИЯ === */
+
 
 .menu-button {
     background: none; border: none; font-size: 14px; font-weight: 700;
@@ -338,8 +347,7 @@ body {
 @media (max-width: 800px) {
     body {
         overflow: auto; /* Включаем скролл */
-        height: auto;
-        min-height: 100vh;
+        /* УДАЛЕНО: height и min-height, так как глобальные стили теперь справляются */
     }
 
     .header {
@@ -404,6 +412,7 @@ body {
         height: 50px;
         margin: 0 15px 0 0;
         flex-shrink: 0; 
+        background-size: contain; /* Добавлено для лучшего отображения на мобильных */
     }
 
     .menu-button {
