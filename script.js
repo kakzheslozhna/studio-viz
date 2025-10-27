@@ -20,12 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function changeLanguage(lang) { translatableElements.forEach(el => { const key = el.dataset.key; if (translations[lang][key]) el.textContent = translations[lang][key]; }); }
     function animateAndChangeLanguage(newLang) { gsap.timeline().to(translatableElements, { opacity: 0, y: -5, duration: 0.2, ease: 'power2.in' }).call(() => { currentLang = newLang; changeLanguage(newLang); }).to(translatableElements, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.02 }); }
     
-    // НОВАЯ ФУНКЦИЯ: Проверка на мобильное устройство
     function isMobile() {
         return window.matchMedia("(max-width: 800px)").matches;
     }
 
-    // ПЕРЕРАБОТАННАЯ ФУНКЦИЯ: Управляет открытием/закрытием меню
     function toggleSubMenu(menuId) {
         const menuToToggle = document.getElementById(menuId);
         if (!menuToToggle) return;
@@ -34,36 +32,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const isAlreadyActive = menuToToggle.classList.contains('active');
         const currentlyOpen = document.querySelector('.button-container.active');
         
-        // Закрываем текущее открытое меню, если оно есть и не является тем, на которое кликнули
         if (currentlyOpen && currentlyOpen !== menuToToggle) {
             currentlyOpen.classList.remove('active');
             const subMenuToClose = currentlyOpen.querySelector('.sub-menu');
             
             if (isMobile()) {
-                // ИЗМЕНЕНО: Анимация закрытия для мобильных
                 gsap.to(subMenuToClose, { maxHeight: 0, duration: 0.3, ease: 'expo.in' });
             } else {
                 const listItemsToClose = subMenuToClose.querySelectorAll('li');
                 gsap.timeline({ onComplete: () => { subMenuToClose.style.display = 'none'; } })
                     .to(listItemsToClose, { opacity: 0, y: 10, stagger: { amount: 0.3 }, duration: 0.3, ease: 'expo.in' })
-                    // ИЗМЕНЕНО: Анимация закрытия для десктопа
                     .to(subMenuToClose, { opacity: 0, scale: 0.95, y: -20, duration: 0.3, ease: 'expo.in' }, "-=0.4");
             }
         }
         
-        // Открываем или закрываем меню, на которое кликнули
         if (!isAlreadyActive) {
             menuToToggle.classList.add('active');
             if (isMobile()) {
-                // ИЗМЕНЕНО: Анимация открытия для мобильных
                 gsap.to(subMenuToToggle, { maxHeight: subMenuToToggle.scrollHeight, duration: 0.4, ease: 'expo.out' });
             } else {
                 const listItemsToToggle = subMenuToToggle.querySelectorAll('li');
-                subMenuToToggle.style.display = 'grid'; // Используем grid для multi-column
+                subMenuToToggle.style.display = 'grid'; 
                 if (!subMenuToToggle.classList.contains('multi-column')) {
                     subMenuToToggle.style.display = 'block';
                 }
-                // ИЗМЕНЕНО: Анимация открытия для десктопа
                 gsap.timeline()
                     .fromTo(subMenuToToggle, { opacity: 0, scale: 0.95, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'expo.out' })
                     .fromTo(listItemsToToggle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: { amount: 0.2 }, duration: 0.4, ease: 'expo.out' }, "-=0.4");
@@ -71,13 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             menuToToggle.classList.remove('active');
             if (isMobile()) {
-                // ИЗМЕНЕНО: Анимация закрытия для мобильных (повторный клик)
                  gsap.to(subMenuToToggle, { maxHeight: 0, duration: 0.3, ease: 'expo.in' });
             } else {
                 const listItemsToToggle = subMenuToToggle.querySelectorAll('li');
                 gsap.timeline({ onComplete: () => { subMenuToToggle.style.display = 'none'; } })
                     .to(listItemsToToggle, { opacity: 0, y: 10, stagger: { amount: 0.3 }, duration: 0.3, ease: 'expo.in' })
-                    // ИЗМЕНЕНО: Анимация закрытия для десктопа (повторный клик)
                     .to(subMenuToToggle, { opacity: 0, scale: 0.95, y: -20, duration: 0.3, ease: 'expo.in' }, "-=0.4");
             }
         }
@@ -95,8 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         preloaderVideo.play().catch(() => { console.warn("Autoplay was blocked."); gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { preloader.style.display = 'none'; startMainPageAnimation(); } }); });
     }
 
-    // --- Универсальная функция для анимации ВСЕХ иконок ---
     function createIconAnimation(menuId, folderName, filePrefix) {
+        // === ИСПРАВЛЕНИЕ: Отключаем тяжелую анимацию на мобильных ===
+        if (isMobile()) return; 
+
         const iconContainer = document.querySelector(`#${menuId} .icon`);
         if (!iconContainer) return;
 
@@ -160,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
     changeLanguage('ru');
     langToggle.addEventListener('click', () => { const isRu = currentLang === 'ru'; const newLang = isRu ? 'en' : 'ru'; langToggle.classList.toggle('en-active'); animateAndChangeLanguage(newLang); });
     document.querySelectorAll('.button-container').forEach(container => { 
-        // В мобильной версии клик по всей плашке открывает меню
         container.addEventListener('click', (e) => { 
             toggleSubMenu(container.id) 
         }); 
@@ -173,19 +164,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- НОВЫЙ, УПРОЩЕННЫЙ КОД ---
     document.querySelectorAll('.icon').forEach(icon => {
         const number = icon.closest('.button-container').querySelector('.number');
         const parentContainer = icon.closest('.button-container');
 
         parentContainer.addEventListener('mouseenter', () => {
-            if (isMobile()) return; // Отключаем hover-эффект на мобильных
+            if (isMobile()) return;
             gsap.to(icon, { scale: 1.1, duration: 0.4, ease: 'power2.out' });
             gsap.to(number, { y: -5, scale: 1.1, duration: 0.4, ease: 'power2.out' });
         });
 
         parentContainer.addEventListener('mouseleave', () => {
-            if (isMobile()) return; // Отключаем hover-эффект на мобильных
+            if (isMobile()) return;
             gsap.to(icon, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
             gsap.to(number, { y: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
         });
