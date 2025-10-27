@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap');
 
+/* === ИСПРАВЛЕНИЕ ДЛЯ MOBILE VIEWPORT === */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%; /* Гарантирует, что контейнер займет всю высоту */
+}
+/* === КОНЕЦ ИСПРАВЛЕНИЯ === */
+
+
 /* === СТИЛИ ДЛЯ ПРЕЛОАДЕРА === */
 #preloader {
     position: fixed;
@@ -27,9 +42,9 @@
 
 
 body {
-    margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background: linear-gradient(160deg, #e0eafc 0%, #cfdef3 100%);
-    height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: #444;
+    display: flex; flex-direction: column; overflow: hidden; color: #444;
 }
 
 .header { 
@@ -56,19 +71,16 @@ body {
 }
 .logo-studio {
     font-family: 'Caveat', cursive;
-    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
     font-size: clamp(48px, 3.5vw, 72px);
 }
 .logo-tech {
     font-family: 'Playfair Display', serif;
-    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
     font-size: clamp(60px, 4.5vw, 100px);
     margin-top: -25px;
     letter-spacing: -2px;
 }
 .logo-viz {
     font-family: 'Caveat', cursive;
-    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
     font-size: clamp(48px, 3.5vw, 72px);
     margin-top: -10px;
 }
@@ -195,7 +207,6 @@ body {
 .button-container:hover .number { transform: scale(1.1); color: #000; }
 
 .icon {
-    /* ИЗМЕНЕНО: Уменьшаем скругление для соответствия исходнику */
     border-radius: 16px; 
     width: 70px; 
     height: 70px; 
@@ -204,7 +215,7 @@ body {
     display: flex; 
     align-items: center; 
     justify-content: center;
-    transition: transform 0.3s ease-out; /* Плавный переход для hover-эффекта */
+    transition: transform 0.3s ease-out;
 }
 
 .icon svg { 
@@ -341,11 +352,9 @@ body {
         right: 20px;
     }
 
-    /* Скрываем десктопный текстовый логотип */
     .logo-studio, .logo-tech, .logo-viz {
         display: none;
     }
-    /* Показываем мобильный логотип-картинку */
     .logo-mobile {
         display: block;
     }
@@ -354,7 +363,6 @@ body {
         margin-top: 20px;
     }
     
-    /* Скрываем фоновые волны */
     .wave-background {
         display: none;
     }
@@ -364,7 +372,6 @@ body {
         justify-content: flex-start;
     }
 
-    /* Перестраиваем меню в вертикальный список */
     .menu-buttons {
         flex-direction: column;
         gap: 15px;
@@ -372,7 +379,6 @@ body {
         max-width: 450px;
     }
 
-    /* Стилизуем контейнер кнопки под дизайн */
     .button-container {
         width: 100%;
         text-align: left;
@@ -384,12 +390,11 @@ body {
         border-radius: 20px;
         padding: 12px;
         display: flex;
-        flex-wrap: wrap; /* Позволяет подменю переноситься на новую строку */
+        flex-wrap: wrap; 
         align-items: center;
         box-sizing: border-box;
     }
 
-    /* Скрываем номера */
     .number {
         display: none;
     }
@@ -398,14 +403,14 @@ body {
         width: 50px;
         height: 50px;
         margin: 0 15px 0 0;
-        flex-shrink: 0; /* Иконка не будет сжиматься */
+        flex-shrink: 0; 
     }
 
     .menu-button {
         color: #333;
         font-size: 16px;
-        flex-grow: 1; /* Текст займет оставшееся место */
-        pointer-events: all; /* Делаем текст кликабельным (часть контейнера) */
+        flex-grow: 1; 
+        pointer-events: all;
         text-align: left;
     }
     .button-container.active .menu-button {
@@ -413,15 +418,14 @@ body {
     }
 
 
-    /* Переделываем выпадающее меню в аккордеон */
     .sub-menu {
-        display: block !important; /* !important чтобы перебить display: none из JS */
+        display: block !important;
         position: static;
         transform: none;
         width: 100%;
         min-width: unset;
-        max-height: 0; /* Начальная высота для анимации */
-        overflow: hidden; /* Скрываем содержимое, пока оно свернуто */
+        max-height: 0; 
+        overflow: hidden; 
         margin-top: 10px;
         padding: 0;
         background: transparent;
@@ -430,17 +434,17 @@ body {
         border: none;
         border-radius: 0;
         box-shadow: none;
-        transition: max-height 0.5s ease-in-out; /* Плавный переход для высоты */
+        transition: max-height 0.5s ease-in-out; 
     }
     
     .sub-menu.multi-column {
-        display: block; /* Убираем грид-сетку */
+        display: block;
         width: 100%;
     }
 
     .sub-menu li {
         font-size: 14px;
-        padding: 8px 10px 8px 20px; /* Добавляем отступ слева */
+        padding: 8px 10px 8px 20px;
         background: transparent;
         color: #444;
     }
