@@ -86,8 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function createIconAnimation(menuId, folderName, filePrefix) {
-        // === ИСПРАВЛЕНИЕ: Отключаем тяжелую анимацию на мобильных ===
-        if (isMobile()) return; 
 
         const iconContainer = document.querySelector(`#${menuId} .icon`);
         if (!iconContainer) return;
@@ -185,3 +183,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initPreloader();
     initAllIconAnimations();
 });
+
