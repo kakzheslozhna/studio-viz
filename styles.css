@@ -1,10 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap');
 
+/* === СТИЛИ ДЛЯ ПРЕЛОАДЕРА === */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000; /* Черный фон на случай задержки видео */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#preloader-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Заполняет экран, сохраняя пропорции */
+}
+
+/* === КЛАСС ДЛЯ СКРЫТИЯ КОНТЕНТА === */
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+
 body {
     margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;
     background: linear-gradient(160deg, #e0eafc 0%, #cfdef3 100%);
     height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: #444;
 }
+
 .header { 
     padding: 25px; 
     position: relative; 
@@ -12,7 +39,7 @@ body {
     height: 50px; 
 }
 
-/* --- REWORKED LOGO --- */
+/* --- REWORKED LOGO (4K ADAPTIVE) --- */
 .logo-container {
     display: flex;
     flex-direction: column;
@@ -29,18 +56,28 @@ body {
 }
 .logo-studio {
     font-family: 'Caveat', cursive;
-    font-size: 64px;
+    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
+    font-size: clamp(48px, 3.5vw, 72px);
 }
 .logo-tech {
     font-family: 'Playfair Display', serif;
-    font-size: 82px;
+    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
+    font-size: clamp(60px, 4.5vw, 100px);
     margin-top: -25px;
     letter-spacing: -2px;
 }
 .logo-viz {
     font-family: 'Caveat', cursive;
-    font-size: 64px;
+    /* ИЗМЕНЕНО: Адаптивный размер шрифта */
+    font-size: clamp(48px, 3.5vw, 72px);
     margin-top: -10px;
+}
+
+/* --- НОВЫЙ СТИЛЬ ДЛЯ МОБИЛЬНОГО ЛОГО --- */
+.logo-mobile {
+    display: none; /* Скрыт по умолчанию */
+    width: 100px;
+    height: auto;
 }
 
 
@@ -157,38 +194,263 @@ body {
 }
 .button-container:hover .number { transform: scale(1.1); color: #000; }
 
-/* --- ИЗМЕНЕНИЕ: Полностью новый стиль иконки для создания 3D-эффекта толстого стекла --- */
 .icon {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.1));
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px; width: 70px; height: 70px; margin: 0 auto 15px; 
-    transform-style: preserve-3d;
-    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-
-    /* Эта комбинация теней создает эффект скошенных граней (фаски) */
-    box-shadow:
-        /* Яркий блик на верхней и левой грани */
-        inset -4px -4px 8px rgba(255, 255, 255, 0.7),
-        /* Глубокая тень на нижней и правой грани */
-        inset 4px 4px 8px rgba(0, 0, 50, 0.15),
-        /* Мягкая тень под иконкой для отрыва от фона */
-        8px 8px 18px rgba(0, 0, 0, 0.1);
+    /* ИЗМЕНЕНО: Уменьшаем скругление для соответствия исходнику */
+    border-radius: 16px; 
+    width: 70px; 
+    height: 70px; 
+    margin: 0 auto 15px; 
+    position: relative;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: transform 0.3s ease-out; /* Плавный переход для hover-эффекта */
 }
 
-.icon svg { stroke: #4a4a4a; fill: #4a4a4a; }
+.icon svg { 
+    stroke: #4a4a4a;
+}
+
+/* Стили для ВСЕХ анимированных иконок */
+.button-container .icon {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 
 .menu-button {
     background: none; border: none; font-size: 14px; font-weight: 700;
     color: #555; pointer-events: none; letter-spacing: 1px; text-transform: uppercase;
 }
+
+/* --- УЛУЧШЕННЫЙ БЛОК СТИЛЕЙ ДЛЯ ВЫПАДАЮЩЕГО МЕНЮ --- */
 .sub-menu {
-    position: absolute; top: calc(100% + 15px); left: 50%; transform: translateX(-50%); width: 220px; list-style: none;
-    padding: 15px; margin: 0; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-    border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); font-size: 14px; color: #444; text-align: left; z-index: 10;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: absolute;
+    top: calc(100% + 20px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    min-width: 240px;
+    max-height: 80vh;
+    overflow-y: auto;
+    list-style: none;
+    padding: 8px;
+    margin: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 
+        0 12px 24px rgba(0, 0, 50, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    text-align: left;
+    z-index: 10;
+    transform-origin: top center;
+    display: none;
 }
-.sub-menu li { margin-bottom: 8px; transition: transform 0.3s, color 0.3s; line-height: 1.4; }
-.sub-menu li.sub-menu-header { font-weight: 700; color: #222; margin-bottom: 10px; text-transform: uppercase; }
-.sub-menu li:not(.sub-menu-header):hover { transform: translateX(5px); color: #000; }
-.sub-menu li:last-child { margin-bottom: 0; }
+
+.sub-menu::-webkit-scrollbar { width: 6px; }
+.sub-menu::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+.sub-menu::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+.sub-menu::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); background-clip: padding-box; }
+
+.sub-menu li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1c1c1e;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    overflow: hidden;
+    break-inside: avoid;
+}
+
+.sub-menu li:not(.sub-menu-header):hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: #333;
+    transform: translateX(2px);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.sub-menu li:not(.sub-menu-header)::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(207, 222, 243, 0.3), transparent);
+    z-index: -1;
+    border-radius: 16px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sub-menu li:not(.sub-menu-header):hover::before { transform: scaleX(1); }
+
+.menu-item-icon { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+.menu-item-icon svg { stroke: #8e8e93; transition: stroke 0.3s ease; }
+.sub-menu li:hover .menu-item-icon svg { stroke: #444; }
+
+.sub-menu-header {
+    font-weight: 700;
+    color: #222222;
+    text-transform: uppercase;
+    letter-spacing: 0.5px; 
+    margin: 6px 0 4px 0;
+    padding: 0 10px;
+    cursor: default;
+    font-size: 14px;
+    opacity: 1;
+}
+.sub-menu-header:hover { color: #222222; background: none; transform: none; }
+.sub-menu-header:hover::before { transform: scaleX(0); }
+
+.sub-menu.multi-column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px;
+    width: 480px;
+}
+/* --- КОНЕЦ УЛУЧШЕННОГО БЛОКА --- */
+
+
+/* === НАЧАЛО БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
+@media (max-width: 800px) {
+    body {
+        overflow: auto; /* Включаем скролл */
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .header {
+        height: auto;
+        padding: 15px;
+    }
+    
+    .language-toggle {
+        top: 20px;
+        right: 20px;
+    }
+
+    /* Скрываем десктопный текстовый логотип */
+    .logo-studio, .logo-tech, .logo-viz {
+        display: none;
+    }
+    /* Показываем мобильный логотип-картинку */
+    .logo-mobile {
+        display: block;
+    }
+    .logo-container {
+        margin-bottom: 30px;
+        margin-top: 20px;
+    }
+    
+    /* Скрываем фоновые волны */
+    .wave-background {
+        display: none;
+    }
+
+    .main-content {
+        padding-top: 0;
+        justify-content: flex-start;
+    }
+
+    /* Перестраиваем меню в вертикальный список */
+    .menu-buttons {
+        flex-direction: column;
+        gap: 15px;
+        width: 90%;
+        max-width: 450px;
+    }
+
+    /* Стилизуем контейнер кнопки под дизайн */
+    .button-container {
+        width: 100%;
+        text-align: left;
+        perspective: none;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 12px;
+        display: flex;
+        flex-wrap: wrap; /* Позволяет подменю переноситься на новую строку */
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    /* Скрываем номера */
+    .number {
+        display: none;
+    }
+    
+    .icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 15px 0 0;
+        flex-shrink: 0; /* Иконка не будет сжиматься */
+    }
+
+    .menu-button {
+        color: #333;
+        font-size: 16px;
+        flex-grow: 1; /* Текст займет оставшееся место */
+        pointer-events: all; /* Делаем текст кликабельным (часть контейнера) */
+        text-align: left;
+    }
+    .button-container.active .menu-button {
+        color: #000;
+    }
+
+
+    /* Переделываем выпадающее меню в аккордеон */
+    .sub-menu {
+        display: block !important; /* !important чтобы перебить display: none из JS */
+        position: static;
+        transform: none;
+        width: 100%;
+        min-width: unset;
+        max-height: 0; /* Начальная высота для анимации */
+        overflow: hidden; /* Скрываем содержимое, пока оно свернуто */
+        margin-top: 10px;
+        padding: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        transition: max-height 0.5s ease-in-out; /* Плавный переход для высоты */
+    }
+    
+    .sub-menu.multi-column {
+        display: block; /* Убираем грид-сетку */
+        width: 100%;
+    }
+
+    .sub-menu li {
+        font-size: 14px;
+        padding: 8px 10px 8px 20px; /* Добавляем отступ слева */
+        background: transparent;
+        color: #444;
+    }
+    .sub-menu li:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+    .sub-menu-header {
+      padding-left: 10px;
+      font-size: 13px;
+    }
+
+}
+/* === КОНЕЦ БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
