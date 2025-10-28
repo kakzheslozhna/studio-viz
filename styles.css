@@ -1,315 +1,285 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap');
-
-/* === ИСПРАВЛЕНИЕ ДЛЯ MOBILE VIEWPORT === */
-html {
- height: 100%;
+@font-face {
+    font-family: 'NotoSans';
+    src: url('media/fonts/NotoSans.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }
 
-body {
- min-height: 100%;
- height: -webkit-fill-available;
- margin: 0;
- padding: 0;
+/* === ИСПРАВЛЕНИЕ ДЛЯ MOBILE VIEWPORT === */
+html, body {
+    /* ИЗМЕНЕНО: Используем svh для корректной работы на iOS */
+    min-height: 100svh; 
+    margin: 0;
+    padding: 0;
 }
 
 #app-container {
- display: flex;
- flex-direction: column;
- min-height: -webkit-fill-available;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%; /* Гарантирует, что контейнер займет всю высоту */
 }
 /* === КОНЕЦ ИСПРАВЛЕНИЯ === */
 
 
 /* === СТИЛИ ДЛЯ ПРЕЛОАДЕРА === */
 #preloader {
- position: fixed;
- top: 0;
- left: 0;
- width: 100%;
- height: 100vh;
- height: -webkit-fill-available;
- background-color: #000; /* Черный фон на случай задержки видео */
- z-index: 9999;
- display: flex;
- justify-content: center;
- align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000; /* Черный фон на случай задержки видео */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #preloader-video {
- width: 100%;
- height: 100%;
- object-fit: cover; /* Заполняет экран, сохраняя пропорции */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Заполняет экран, сохраняя пропорции */
 }
 
 /* === КЛАСС ДЛЯ СКРЫТИЯ КОНТЕНТА === */
 .hidden {
- opacity: 0;
- visibility: hidden;
+    opacity: 0;
+    visibility: hidden;
 }
 
 
 body {
- font-family: 'Montserrat', sans-serif;
- background: linear-gradient(160deg, #e0eafc 0%, #cfdef3 100%);
- display: flex; flex-direction: column; overflow: hidden; color: #444;
+    font-family: 'NotoSans', sans-serif;
+    /* === ИЗМЕНЕНО: НОВЫЙ ФОН === */
+    background-image: url('media/bg_horiz01.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* === КОНЕЦ ИЗМЕНЕНИЙ === */
+    display: flex; flex-direction: column; overflow: hidden; color: #444;
 }
 
 .header { 
- padding: 25px; 
- padding-top: calc(25px + env(safe-area-inset-top)); 
- position: relative; 
- z-index: 10; 
- height: 50px; 
+    padding: 25px; 
+    position: relative; 
+    z-index: 10; 
+    height: 50px; 
 }
 
-/* --- REWORKED LOGO (4K ADAPTIVE) --- */
+/* --- ИЗМЕНЕНО: ЕДИНЫЙ ЛОГОТИП --- */
 .logo-container {
- display: flex;
- flex-direction: column;
- align-items: center;
- margin-bottom: 50px; 
- user-select: none;
- pointer-events: none;
-}
-.logo-studio, .logo-tech, .logo-viz {
- color: #fff;
- text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
- line-height: 1;
- font-weight: 700;
-}
-.logo-studio {
- font-family: 'Caveat', cursive;
- font-size: clamp(48px, 3.5vw, 72px);
-}
-.logo-tech {
- font-family: 'Playfair Display', serif;
- font-size: clamp(60px, 4.5vw, 100px);
- margin-top: -25px;
- letter-spacing: -2px;
-}
-.logo-viz {
- font-family: 'Caveat', cursive;
- font-size: clamp(48px, 3.5vw, 72px);
- margin-top: -10px;
+    display: flex;
+    justify-content: center; /* Добавлено для центрирования */
+    align-items: center;
+    margin-bottom: 50px; 
 }
 
-/* --- НОВЫЙ СТИЛЬ ДЛЯ МОБИЛЬНОГО ЛОГО --- */
-.logo-mobile {
- display: none; /* Скрыт по умолчанию */
- width: 100px;
- height: auto;
+.logo {
+    width: 150px; /* Размер для десктопа */
+    height: auto;
+    user-select: none;
+    pointer-events: none;
 }
+/* === КОНЕЦ БЛОКА ИЗМЕНЕНИЙ ЛОГОТИПА === */
 
 
 /* --- REBUILT & PERFECTED LANGUAGE TOGGLE (GLASSMORPHISM STYLE) --- */
 .language-toggle {
- position: absolute; right: 30px; top: 30px; 
- width: 72px; 
- height: 36px;
- border-radius: 50px; cursor: pointer;
- background: rgba(255, 255, 255, 0.2);
- backdrop-filter: blur(10px);
- -webkit-backdrop-filter: blur(10px);
- border: 1px solid rgba(255, 255, 255, 0.3);
- box-shadow: 0 4px 15px rgba(0,0,0,0.1);
- overflow: hidden; 
- -webkit-user-select: none; /* Safari */
- -moz-user-select: none; /* Firefox */
- -ms-user-select: none; /* IE10+/Edge */
- user-select: none; /* Standard */
+    position: absolute; right: 30px; top: 30px; 
+    width: 72px; 
+    height: 36px;
+    border-radius: 50px; cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden; 
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+    user-select: none;         /* Standard */
 }
 .language-toggle::before {
- content: ''; 
- position: absolute; 
- top: 4px; 
- left: 4px;
- width: 28px; 
- height: 28px; 
- background: white; 
- border-radius: 50%; 
- z-index: 2;
- box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
- transition: left 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+    content: ''; 
+    position: absolute; 
+    top: 4px; 
+    left: 4px;
+    width: 28px; 
+    height: 28px; 
+    background: white; 
+    border-radius: 50%; 
+    z-index: 2;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    transition: left 0.4s cubic-bezier(0.76, 0, 0.24, 1);
 }
 .language-toggle.en-active::before {
- left: calc(100% - 32px);
+    left: calc(100% - 32px);
 }
 .lang-text {
- position: absolute;
- top: 0;
- height: 100%;
- display: flex;
- align-items: center;
- font-size: 14px;
- font-weight: 700;
- color: #333;
- text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
- pointer-events : none;
- z-index: 1;
- transition: opacity 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.3s ease-in-out;
 }
 #lang-text-en {
- left: 14px;
- opacity: 0;
+    left: 14px;
+    opacity: 0;
 }
 #lang-text-ru {
- right: 14px;
- opacity: 1;
+    right: 14px;
+    opacity: 1;
 }
 .language-toggle.en-active #lang-text-en {
- opacity: 1;
+    opacity: 1;
 }
 .language-toggle.en-active #lang-text-ru {
- opacity: 0;
+    opacity: 0;
 }
 
 .main-content { 
- flex: 1; 
- display: flex; 
- flex-direction: column; 
- align-items: center; 
- justify-content: flex-start;
- padding-top: 5vh;
- position: relative; 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start;
+    padding-top: 5vh;
+    position: relative; 
 }
 
-/* --- PSP WAVE BACKGROUND (ПЕРЕРАБОТАНО) --- */
-.wave-background { 
- position: absolute; 
- bottom: 0; 
- left: 0; 
- width: 100%; 
- height: 25%;
- z-index: -1;
- pointer-events: none;
- overflow: hidden;
-}
-.wave-background svg { 
- position: absolute; 
- bottom: 0; 
- left: 0; 
- width: 100%;
- height: auto;
-}
-#wave-1, #wave-2 { 
- stroke-linecap: round; 
- stroke-linejoin: round; 
-}
+/* === УДАЛЕНО: Блок стилей для .wave-background === */
 
 
 .menu-buttons { display: flex; gap: 80px; }
 .button-container { position: relative; text-align: center; width: 120px; perspective: 1000px; cursor: pointer; }
-.button-container.active .menu-button { color: #000; font-weight: 700; }
+.button-container.active .menu-button { color: #000; font-weight: 700; text-shadow: none; /* ИЗМЕНЕНО: Убираем тень для черного текста */ }
 
 .number {
- position: absolute; 
- top: -15px;
- right: 5px;
- width: 24px; 
- height: 24px;
- border-radius: 50%; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px);
- border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;
- font-size: 12px; font-weight: 700; color: #444; transition: transform 0.3s, color 0.3s; cursor: pointer;
- z-index: 5;
+    position: absolute; 
+    top: -15px;
+    right: 5px;
+    width: 24px; 
+    height: 24px;
+    border-radius: 50%; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; 
+    color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* ИЗМЕНЕНО: Тень для читаемости */
+    transition: transform 0.3s, color 0.3s; cursor: pointer;
+    z-index: 5;
 }
-.button-container:hover .number { transform: scale(1.1); color: #000; }
+.button-container:hover .number { transform: scale(1.1); color: #000; text-shadow: none; }
+/* ИЗМЕНЕНО: Добавлен стиль для активного состояния номера */
+.button-container.active .number { color: #000; text-shadow: none; }
 
 .icon {
- border-radius: 16px; 
- width: 70px; 
- height: 70px; 
- margin: 0 auto 15px; 
- position: relative;
- display: flex; 
- align-items: center; 
- justify-content: center;
- transition: transform 0.3s ease-out;
+    border-radius: 16px; 
+    width: 70px; 
+    height: 70px; 
+    margin: 0 auto 15px; 
+    position: relative;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: transform 0.3s ease-out;
 }
 
 .icon svg { 
- stroke: #4a4a4a;
+    stroke: #4a4a4a;
 }
 
-/* Стили для ВСЕХ анимированных иконок */
-.button-container .icon {
- background-size: cover;
- background-position: center;
- background-repeat: no-repeat;
+/* === УДАЛЕНО: background-image для .icon, теперь только canvas === */
+
+/* === НОВОЕ: СТИЛИ ДЛЯ CANVAS В ИКОНКАХ === */
+.icon canvas {
+    border-radius: 16px;
+    width: 100%;
+    height: 100%;
+    display: block;
 }
+/* === КОНЕЦ === */
 
 
 .menu-button {
- background: none; border: none; font-size: 14px; font-weight: 700;
- color: #555; pointer-events: none; letter-spacing: 1px; text-transform: uppercase;
+    background: none; border: none; font-size: 14px; font-weight: 700;
+    color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4); /* ИЗМЕНЕНО: Тень для читаемости */
+    pointer-events: none; letter-spacing: 1px; text-transform: uppercase;
 }
 
 /* --- УЛУЧШЕННЫЙ БЛОК СТИЛЕЙ ДЛЯ ВЫПАДАЮЩЕГО МЕНЮ --- */
 .sub-menu {
- position: absolute;
- top: calc(100% + 20px);
- left: 50%;
- transform: translateX(-50%);
- width: max-content;
- min-width: 240px;
- max-height: 80vh;
- overflow-y: auto;
- list-style: none;
- padding: 8px;
- margin: 0;
- background: rgba(255, 255, 255, 0.95);
- backdrop-filter: blur(40px);
- -webkit-backdrop-filter: blur(40px);
- border-radius: 24px;
- border: 1px solid rgba(255, 255, 255, 0.6);
- box-shadow: 
- 0 12px 24px rgba(0, 0, 50, 0.08),
- inset 0 1px 1px rgba(255, 255, 255, 0.5);
- text-align: left;
- z-index: 10;
- transform-origin: top center;
- display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    /* === ИЗМЕНЕНО: Удалена минимальная ширина, чтобы центрирование работало корректно === */
+    /* min-width: 240px; */ 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    text-align: left;
+    z-index: 10;
+    transform-origin: top center;
+    display: none;
 }
 
-.sub-menu::-webkit-scrollbar { width: 6px; }
-.sub-menu::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
-.sub-menu::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
-.sub-menu::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.3); background-clip: padding-box; }
+.sub-menu::-webkit-scrollbar { display: none; }
 
 .sub-menu li {
- position: relative;
- display: flex;
- align-items: center;
- gap: 10px;
- margin: 0;
- padding: 6px 10px;
- border-radius: 16px;
- font-size: 15px;
- font-weight: 500;
- color: #1c1c1e;
- line-height: 1.2;
- cursor: pointer;
- transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
- overflow: hidden;
- break-inside: avoid;
+    position: relative;
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4); /* ИЗМЕНЕНО: Тень для читаемости */
+    line-height: 1.2;
+    cursor: pointer;
+    background: transparent;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    overflow: hidden;
+    break-inside: avoid;
 }
 
 .sub-menu li:not(.sub-menu-header):hover {
- background: rgba(255, 255, 255, 0.6);
- color: #333;
- transform: translateX(2px);
- box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.6);
+    color: #000; /* ИЗМЕНЕНО: Цвет при наведении - черный */
+    text-shadow: none; /* ИЗМЕНЕНО: Убираем тень на светлом фоне */
+    transform: translateX(2px);
 }
 
 .sub-menu li:not(.sub-menu-header)::before {
- content: '';
- position: absolute;
- top: 0; left: 0;
- width: 100%; height: 100%;
- background: linear-gradient(to right, rgba(207, 222, 243, 0.3), transparent);
- z-index: -1;
- border-radius: 16px;
- transform: scaleX(0);
- transform-origin: left;
- transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to right, rgba(207, 222, 243, 0.3), transparent);
+    z-index: -1;
+    border-radius: 16px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .sub-menu li:not(.sub-menu-header):hover::before { transform: scaleX(1); }
@@ -319,149 +289,155 @@ body {
 .sub-menu li:hover .menu-item-icon svg { stroke: #444; }
 
 .sub-menu-header {
- font-weight: 700;
- color: #222222;
- text-transform: uppercase;
- letter-spacing: 0.5px; 
- margin: 6px 0 4px 0;
- padding: 0 10px;
- cursor: default;
- font-size: 14px;
- opacity: 1;
+    font-weight: 700;
+    color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3); /* ИЗМЕНЕНО: Тень для читаемости */
+    text-transform: uppercase;
+    letter-spacing: 0.5px; 
+    margin: 6px 0 4px 0;
+    padding: 6px 12px 4px 12px;
+    cursor: default;
+    font-size: 13px;
+    opacity: 1;
 }
-.sub-menu-header:hover { color: #222222; background: none; transform: none; }
+.sub-menu-header:hover { color: #fff; background: none; transform: none; } /* ИЗМЕНЕНО: Убрано изменение цвета */
 .sub-menu-header:hover::before { transform: scaleX(0); }
 
 .sub-menu.multi-column {
- display: grid;
- grid-template-columns: repeat(2, 1fr);
- gap: 0px;
- width: 480px;
+    display: block;
+    width: auto;
 }
 /* --- КОНЕЦ УЛУЧШЕННОГО БЛОКА --- */
 
 
 /* === НАЧАЛО БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
-@media (max-width: 1024px) {
- body {
- overflow: auto; /* Включаем скролл */
- height: auto;
- min-height: -webkit-fill-available;
- }
+@media (max-width: 800px) {
+    body {
+        overflow: auto; /* Включаем скролл */
+        /* === ИЗМЕНЕНО: НОВЫЙ ФОН ДЛЯ МОБИЛЬНЫХ === */
+        background-image: url('media/bg_verti01.png');
+    }
 
- .header {
- height: auto;
- padding: 15px;
- padding-top: calc(15px + env(safe-area-inset-top));
- }
- 
- .language-toggle {
- top: 20px;
- right: 20px;
- }
+    .header {
+        height: auto;
+        padding: 15px;
+    }
+    
+    .language-toggle {
+        top: 20px;
+        right: 20px;
+    }
 
- .logo-studio, .logo-tech, .logo-viz {
- display: none;
- }
- .logo-mobile {
- display: block;
- }
- .logo-container {
- margin-bottom: 30px;
- margin-top: 20px;
- }
- 
- .wave-background {
- display: none;
- }
+    .logo {
+        width: 100px; /* Размер для мобильных */
+    }
 
- .main-content {
- padding-top: 0;
- justify-content: flex-start;
- }
+    .logo-container {
+        margin-bottom: 30px;
+        margin-top: 20px;
+    }
+    
+    /* === УДАЛЕНО: Скрытие .wave-background, так как он больше не существует === */
 
- .menu-buttons {
- flex-direction: column;
- gap: 15px;
- width: 90%;
- max-width: 450px;
- }
+    .main-content {
+        padding-top: 0;
+        justify-content: center;
+    }
 
- .button-container {
- width: 100%;
- text-align: left;
- perspective: none;
- background: rgba(255, 255, 255, 0.4);
- backdrop-filter: blur(10px);
- -webkit-backdrop-filter: blur(10px);
- border: 1px solid rgba(255, 255, 255, 0.5);
- border-radius: 20px;
- padding: 12px;
- display: flex;
- flex-wrap: wrap; 
- align-items: center;
- box-sizing: border-box;
- }
+    .menu-buttons {
+        flex-direction: column;
+        gap: 15px;
+        width: 90%;
+        max-width: 450px;
+    }
 
- .number {
- display: none;
- }
- 
- .icon {
- width: 50px;
- height: 50px;
- margin: 0 15px 0 0;
- flex-shrink: 0; 
- }
+    .button-container {
+        width: 100%;
+        perspective: none;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 5px 15px;
+        align-items: center;
+        box-sizing: border-box;
+    }
 
- .menu-button {
- color: #333;
- font-size: 16px;
- flex-grow: 1; 
- pointer-events: all;
- text-align: left;
- }
- .button-container.active .menu-button {
- color: #000;
- }
+    .number {
+        display: none;
+    }
+    
+    .icon {
+        width: 70px;
+        height: 70px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .menu-button {
+        color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+        font-size: 16px;
+        pointer-events: all;
+        text-align: left;
+    }
+    .button-container.active .menu-button {
+        color: #000;
+    }
 
 
- .sub-menu {
- display: block !important;
- position: static;
- transform: none;
- width: 100%;
- min-width: unset;
- max-height: 0; 
- overflow: hidden; 
- margin-top: 10px;
- padding: 0;
- background: transparent;
- backdrop-filter: none;
- -webkit-backdrop-filter: none;
- border: none;
- border-radius: 0;
- box-shadow: none;
- transition: max-height 0.5s ease-in-out; 
- }
- 
- .sub-menu.multi-column {
- display: block;
- width: 100%;
- }
+    .sub-menu {
+        display: block !important;
+        position: static;
+        grid-column: 2;
+        grid-row: 2;
+        transform: none;
+        width: auto;
+        min-width: unset;
+        max-height: 0; 
+        overflow: hidden; 
+        margin: 0;
+        margin-left: 0;
+        padding: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        transition: max-height 0.5s ease-in-out; 
+    }
+    
+    .sub-menu.multi-column {
+        display: block;
+        width: auto;
+    }
 
- .sub-menu li {
- font-size: 14px;
- padding: 8px 10px 8px 20px;
- background: transparent;
- color: #444;
- }
- .sub-menu li:hover {
- background: rgba(255, 255, 255, 0.4);
- }
- .sub-menu-header {
- padding-left: 10px;
- font-size: 13px;
- }
+    .sub-menu li {
+        font-size: 14px;
+        padding: 6px 12px;
+        background: transparent;
+        color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
+        border-radius: 16px;
+        justify-content: flex-start; /* На мобильных выравниваем по левому краю */
+    }
+    .sub-menu li:hover {
+        background: rgba(255, 255, 255, 0.6);
+        color: #000; /* ИЗМЕНЕНО: Цвет при наведении - черный */
+    }
+    .sub-menu-header {
+      padding: 6px 12px 4px 12px;
+      font-size: 13px;
+    }
+
+    /* === ДОБАВЛЕНО: Стили для canvas на мобильных === */
+    .icon canvas {
+        border-radius: 16px;
+    }
+    /* === КОНЕЦ === */
 
 }
+/* === КОНЕЦ БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
