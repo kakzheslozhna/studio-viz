@@ -20,10 +20,13 @@
         </defs>
     </svg>
 
-    <!-- === НОВОЕ: ПРЕЛОАДЕР С ВИДЕО === -->
+    <!-- === ИЗМЕНЕНО: ПРЕЛОАДЕР С ОПТИМИЗИРОВАННЫМИ ВИДЕОФОРМАТАМИ === -->
     <div id="preloader">
-        <!-- ВАЖНО: Убедись, что видео конвертировано в .mp4 -->
-        <video id="preloader-video" src="media/logo_SVT02.mov" playsinline muted autoplay></video>
+        <video id="preloader-video" playsinline muted autoplay>
+            <!-- Браузер выберет лучший формат: сначала более эффективный webm, потом универсальный mp4 -->
+            <source src="media/logo_SVT02.webm" type="video/webm">
+            <source src="media/logo_SVT02.mp4" type="video/mp4">
+        </video>
     </div>
 
     <!-- === НОВОЕ: КОНТЕЙНЕР ДЛЯ УПРАВЛЕНИЯ ВИДИМОСТЬЮ === -->
