@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === ОСНОВНЫЕ ФУНКЦИИ ===
     
+    // === ИЗМЕНЕНО: ФУНКЦИЯ ДЛЯ РАБОТЫ С КЛИКАБЕЛЬНЫМИ ССЫЛКАМИ ===
     function changeLanguage(lang) {
         translatableElements.forEach(el => {
             const key = el.dataset.key;
@@ -111,10 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentlyOpen = document.querySelector('.button-container.active');
         
         if (currentlyOpen && currentlyOpen !== menuToToggle) {
+            // Trigger reverse rotation on closing other menu
             const otherIconContainer = currentlyOpen.querySelector('.icon');
             const otherAnim = animations.find(anim => anim.menuId === currentlyOpen.id);
             if (otherAnim && otherIconContainer) {
-                playRotationAnimation(otherAnim, otherIconContainer, true);
+                playRotationAnimation(otherAnim, otherIconContainer, true); // Reverse
             }
             currentlyOpen.classList.remove('active');
             const subMenuToClose = currentlyOpen.querySelector('.sub-menu');
@@ -130,26 +132,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (!isAlreadyActive) {
+            // Trigger forward rotation on opening menu
             const iconContainer = menuToToggle.querySelector('.icon');
             const anim = animations.find(anim => anim.menuId === menuId);
             if (anim && iconContainer) {
-                playRotationAnimation(anim, iconContainer, false);
+                playRotationAnimation(anim, iconContainer, false); // Forward
             }
             menuToToggle.classList.add('active');
             if (isMobile()) {
                 gsap.to(subMenuToToggle, { maxHeight: subMenuToToggle.scrollHeight, duration: 0.4, ease: 'expo.out' });
             } else {
                 const listItemsToToggle = subMenuToToggle.querySelectorAll('li');
+                // === ИЗМЕНЕНИЕ: Упрощена логика для исправления центрирования ===
                 subMenuToToggle.style.display = 'block'; 
                 gsap.timeline()
                     .fromTo(subMenuToToggle, { opacity: 0, scale: 0.95, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'expo.out' })
                     .fromTo(listItemsToToggle, { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: { amount: 0.2 }, duration: 0.4, ease: 'expo.out' }, "-=0.4");
             }
         } else {
+            // Trigger reverse rotation on closing current menu
             const iconContainer = menuToToggle.querySelector('.icon');
             const anim = animations.find(anim => anim.menuId === menuId);
             if (anim && iconContainer) {
-                playRotationAnimation(anim, iconContainer, true);
+                playRotationAnimation(anim, iconContainer, true); // Reverse
             }
             menuToToggle.classList.remove('active');
             if (isMobile()) {
@@ -179,14 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // === КОМБИНИРОВАННАЯ АНИМАЦИЯ ИКОНОК С CANVAS ===
     let animations = [];
     let ticker = null;
-    
-    // === ИЗМЕНЕНО: Задаем размер иконки в CSS пикселях ===
-    const CSS_ICON_SIZE = 70; 
+    const DESKTOP_ICON_SIZE = 70;
+    const MOBILE_ICON_SIZE = 70;
     const BASE_FRAME_COUNT = 50;
     const ROTATION_FRAME_COUNT = 40;
-    const BASE_ONE_WAY_DURATION = 1.5;
+    const BASE_ONE_WAY_DURATION = 1.5; // секунды
     const BASE_FULL_CYCLE_MS = BASE_ONE_WAY_DURATION * 2 * 1000;
-    const ROTATION_DURATION_MS = 1000;
+    const ROTATION_DURATION_MS = 1000; // 1.5 секунды для ротации
 
     function startTicker() {
         if (ticker) return;
@@ -212,6 +216,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (elapsed >= ROTATION_DURATION_MS) {
                         anim.mode = 'base';
                         anim.isPlaying = true;
+                        
+                        // === ИЗМЕНЕНИЕ №1: УДАЛЕНА СТРОКА, КОТОРАЯ ВОССТАНАВЛИВАЛА ПАУЗУ ===
+                        // anim.baseStartTime = currentTime - anim.basePausedTime; // <--- ЭТА СТРОКА ВЫЗЫВАЛА РАССИНХРОН
+                        // Теперь, когда анимация вращения заканчивается, мы просто возвращаемся
+                        // к основному циклу, который никогда не останавливался.
+                        
                         const baseElapsed = (currentTime - anim.baseStartTime) % BASE_FULL_CYCLE_MS;
                         let baseCycleProgress = baseElapsed / BASE_FULL_CYCLE_MS;
                         let baseDirProgress;
@@ -229,12 +239,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         frame = anim.rotationFrames[frameIndex];
                     }
                 }
-                
-                // === ИЗМЕНЕНО: Логика отрисовки для canvas высокого разрешения ===
+                // ... внутри функции ticker, в цикле animations.forEach
                 if (frame && anim.ctx) {
-                    // Очищаем и рисуем, используя CSS размер. Масштаб контекста сделает свое дело.
-                    anim.ctx.clearRect(0, 0, anim.cssSize, anim.cssSize);
-                    anim.ctx.drawImage(frame, 0, 0, anim.cssSize, anim.cssSize);
+                    // Важно: размер для очистки - это реальный размер canvas
+                    anim.ctx.clearRect(0, 0, anim.canvas.width, anim.canvas.height);
+                    // А размер для рисования - это базовый размер до умножения на dpr
+                    anim.ctx.drawImage(frame, 0, 0, 70, 70); // Используем 70, т.к. iconSize=70
                 }
             });
             requestAnimationFrame(ticker);
@@ -245,27 +255,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function createCombinedAnimation(menuId, baseFolder, basePrefix, rotFolder, rotPrefix) {
         const iconContainer = document.querySelector(`#${menuId} .icon`);
         if (!iconContainer) return Promise.resolve(null);
-        
-        // === НОВОЕ: Получаем devicePixelRatio для HiDPI/Retina экранов ===
-        const dpr = window.devicePixelRatio || 1;
+
         const isMobileDevice = isMobile();
+        const iconSize = 70; 
+        const dpr = window.devicePixelRatio || 1;
 
-        const baseImageUrls = Array.from({ length: BASE_FRAME_COUNT }, (_, i) => `media/${baseFolder}/${basePrefix}_${String(i + 1).padStart(3, '0')}.png`);
-        const rotImageUrls = Array.from({ length: ROTATION_FRAME_COUNT }, (_, i) => `media/${rotFolder}/${rotPrefix}_${String(i + 1).padStart(3, '0')}.png`);
-
-        const loadImage = url => new Promise(resolve => {
+        // Загрузка базовых кадров
+        const baseImageUrls = [];
+        for (let i = 1; i <= BASE_FRAME_COUNT; i++) {
+            const frameNumber = String(i).padStart(3, '0');
+            baseImageUrls.push(`media/${baseFolder}/${basePrefix}_${frameNumber}.png`);
+        }
+        const baseFramePromises = baseImageUrls.map(url => new Promise((resolve) => {
             const img = new Image();
+            img.crossOrigin = 'anonymous';
             img.onload = () => resolve(img);
             img.onerror = () => resolve(null);
             img.src = url;
-        });
+        }));
 
-        const baseFramePromises = baseImageUrls.map(loadImage);
-        const rotFramePromises = rotImageUrls.map(loadImage);
+        // Загрузка ротационных кадров
+        const rotImageUrls = [];
+        for (let i = 1; i <= ROTATION_FRAME_COUNT; i++) {
+            const frameNumber = String(i).padStart(3, '0');
+            rotImageUrls.push(`media/${rotFolder}/${rotPrefix}_${frameNumber}.png`);
+        }
+        const rotFramePromises = rotImageUrls.map(url => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = url;
+        }));
 
         return Promise.all([Promise.all(baseFramePromises), Promise.all(rotFramePromises)]).then(([loadedBaseFrames, loadedRotFrames]) => {
-            const validBaseFrames = loadedBaseFrames.filter(Boolean);
-            const validRotFrames = loadedRotFrames.filter(Boolean);
+            const validBaseFrames = loadedBaseFrames.filter(img => img !== null);
+            const validRotFrames = loadedRotFrames.filter(img => img !== null);
 
             if (validBaseFrames.length === 0 || validRotFrames.length === 0) {
                 console.warn(`No valid frames loaded for ${menuId}`);
@@ -274,31 +299,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log(`Кадры для ${menuId} предзагружены: базовые (${validBaseFrames.length}), ротационные (${validRotFrames.length}).`);
 
-            // === ИЗМЕНЕНО: Создание canvas с учетом dpr ===
+            // Создаем canvas
             const canvas = document.createElement('canvas');
-            
-            // 1. Задаем реальное разрешение (bitmap)
-            canvas.width = CSS_ICON_SIZE * dpr;
-            canvas.height = CSS_ICON_SIZE * dpr;
-            
-            // 2. Задаем CSS размер, чтобы canvas не был гигантским на странице
-            canvas.style.width = `${CSS_ICON_SIZE}px`;
-            canvas.style.height = `${CSS_ICON_SIZE}px`;
-            
+            // Устанавливаем реальный размер canvas в пикселях с учетом dpr
+            canvas.width = iconSize * dpr;
+            canvas.height = iconSize * dpr;
+
+            // Устанавливаем CSS-размер, который видит пользователь
+            canvas.style.width = `${iconSize}px`;
+            canvas.style.height = `${iconSize}px`;
+
             const ctx = canvas.getContext('2d');
-            
-            // 3. Масштабируем контекст, чтобы рисовать в привычных координатах
+
+            // Масштабируем контекст, чтобы рисовать в координатах iconSize
             ctx.scale(dpr, dpr);
-            
-            canvas.style.display = 'block';
-            canvas.style.borderRadius = isMobileDevice ? '12px' : '16px'; // Как в CSS
             iconContainer.appendChild(canvas);
             iconContainer.style.backgroundImage = 'none';
 
-            // Рисуем первый кадр
+            // Рисуем первый базовый кадр
             const firstFrame = validBaseFrames[0];
             if (firstFrame) {
-                ctx.drawImage(firstFrame, 0, 0, CSS_ICON_SIZE, CSS_ICON_SIZE);
+                // Рисуем изображение в масштабированных координатах
+                ctx.drawImage(firstFrame, 0, 0, iconSize, iconSize);
             }
 
             const anim = {
@@ -316,8 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isPlaying: true,
                 rotationStartTime: 0,
                 isReverse: false,
-                isMobile: isMobileDevice,
-                cssSize: CSS_ICON_SIZE // === НОВОЕ: Сохраняем CSS размер для ticker'а
+                isMobile: isMobileDevice
             };
 
             animations.push(anim);
@@ -327,7 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return null;
         });
     }
-
 
     function initAllAnimations() {
         const animationsConfig = [
@@ -343,7 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 animations = loadedAnims.filter(anim => anim !== null);
                 if (animations.length > 0) {
                     startTicker();
-                    let visibilityHandler = () => {
+                    // Обработчик видимости
+                    let visibilityHandler = null;
+                    visibilityHandler = () => {
                         const now = performance.now();
                         if (document.hidden) {
                             animations.forEach(anim => {
@@ -368,6 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     };
                     document.addEventListener("visibilitychange", visibilityHandler);
+                    // Очистка при unload
                     window.addEventListener('beforeunload', () => {
                         document.removeEventListener("visibilitychange", visibilityHandler);
                     });
@@ -380,10 +403,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const now = performance.now();
 
+        // === ИЗМЕНЕНИЕ №2: УДАЛЕН БЛОК, КОТОРЫЙ СТАВИЛ БАЗОВУЮ АНИМАЦИЮ НА ПАУЗУ ===
+        // Мы больше не останавливаем базовую анимацию. Она просто перестает
+        // отрисовываться на время, пока mode='rotating', но ее таймер продолжает идти.
+        /*
+        // Паузируем базовую анимацию
+        if (anim.mode === 'base') {
+            anim.basePausedTime = (now - anim.baseStartTime) % anim.fullCycleMs;
+            anim.isPlaying = false;
+        }
+        */
+
         anim.mode = 'rotating';
         anim.isReverse = isReverse;
         anim.rotationStartTime = now;
 
+        // GSAP анимация масштаба с overwrite для избежания конфликтов
         gsap.killTweensOf(iconContainer);
         const targetScale = isReverse ? 1 : 1.1;
         gsap.to(iconContainer, {
@@ -392,7 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ease: 'power2.inOut',
             overwrite: true,
             onComplete: () => {
-                gsap.set(iconContainer, { scale: targetScale });
+                if (isReverse) {
+                    gsap.set(iconContainer, { scale: 1 });
+                } else {
+                    gsap.set(iconContainer, { scale: 1.1 });
+                }
             }
         });
     }
