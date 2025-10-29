@@ -158,7 +158,12 @@ body {
 /* === УДАЛЕНО: Блок стилей для .wave-background === */
 
 
-.menu-buttons { display: flex; gap: 80px; }
+.menu-buttons { 
+    display: flex; 
+    gap: 80px; 
+    flex-wrap: wrap; /* ДОБАВЛЕНО: Для адаптивности на устройствах вроде Z-Fold */
+    justify-content: center; /* ДОБАВЛЕНО: Центрирование при wrap */
+}
 .button-container { position: relative; text-align: center; width: 120px; perspective: 1000px; cursor: pointer; }
 .button-container.active .menu-button { color: #000; font-weight: 700; text-shadow: none; /* ИЗМЕНЕНО: Убираем тень для черного текста */ }
 
@@ -233,7 +238,7 @@ body {
     border-radius: 0;
     border: none;
     box-shadow: none;
-    text-align: left;
+    text-align: center; /* ИЗМЕНЕНО: Центрирование текста для выравнивания с названием меню */
     z-index: 10;
     transform-origin: top center;
     display: none;
@@ -244,7 +249,7 @@ body {
 .sub-menu li {
     position: relative;
     display: flex;
-    justify-content: flex-start; 
+    justify-content: center; /* ИЗМЕНЕНО: Центрирование для выравнивания с названием меню */
     align-items: center;
     gap: 10px;
     margin: 0;
@@ -299,6 +304,7 @@ body {
     cursor: default;
     font-size: 13px;
     opacity: 1;
+    text-align: center; /* ДОБАВЛЕНО: Центрирование для заголовков */
 }
 .sub-menu-header:hover { color: #fff; background: none; transform: none; } /* ИЗМЕНЕНО: Убрано изменение цвета */
 .sub-menu-header:hover::before { transform: scaleX(0); }
@@ -311,7 +317,7 @@ body {
 
 
 /* === НАЧАЛО БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
-@media (max-width: 800px) {
+@media (max-width: 1024px) { /* ИЗМЕНЕНО: Увеличен порог до 1024px для лучшей поддержки foldables и крупных телефонов вроде iPhone Pro Max / Z-Fold */
     body {
         overflow: auto; /* Включаем скролл */
         /* === ИЗМЕНЕНО: НОВЫЙ ФОН ДЛЯ МОБИЛЬНЫХ === */
@@ -409,6 +415,7 @@ body {
         border-radius: 0;
         box-shadow: none;
         transition: max-height 0.5s ease-in-out; 
+        text-align: left; /* ИЗМЕНЕНО: На мобильных оставляем left для лучшей читаемости */
     }
     
     .sub-menu.multi-column {
@@ -422,7 +429,7 @@ body {
         background: transparent;
         color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
         border-radius: 16px;
-        justify-content: flex-start; /* На мобильных выравниваем по левому краю */
+        justify-content: flex-start; /* ИЗМЕНЕНО: На мобильных flex-start */
     }
     .sub-menu li:hover {
         background: rgba(255, 255, 255, 0.6);
@@ -431,6 +438,7 @@ body {
     .sub-menu-header {
       padding: 6px 12px 4px 12px;
       font-size: 13px;
+      text-align: left; /* ДОБАВЛЕНО: Left на мобильных */
     }
 
     /* === ДОБАВЛЕНО: Стили для canvas на мобильных === */
@@ -441,3 +449,20 @@ body {
 
 }
 /* === КОНЕЦ БЛОКА ДЛЯ МОБИЛЬНОЙ ВЕРСИИ === */
+
+/* ДОБАВЛЕНО: Дополнительный брейкпоинт для tablet/foldable устройств (между 800px и 1024px) */
+@media (min-width: 801px) and (max-width: 1024px) {
+    .menu-buttons {
+        gap: 40px; /* Уменьшен gap для лучшего fit на foldables */
+    }
+    .button-container {
+        width: 100px; /* Легкое уменьшение для адаптивности */
+    }
+    .icon {
+        width: 60px;
+        height: 60px;
+    }
+    .logo {
+        width: 120px;
+    }
+}
