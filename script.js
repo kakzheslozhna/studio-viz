@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // === ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ===
     let currentLang = 'ru';
+    let lastIsMobile = isMobile(); // ДОБАВЛЕНО: Для отслеживания изменений режима на resize
 
     // === ИЗМЕНЕНО: ОБНОВЛЕННЫЙ ОБЪЕКТ ПЕРЕВОДОВ ===
     const translations = {
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateAndChangeLanguage(newLang) { gsap.timeline().to(translatableElements, { opacity: 0, y: -5, duration: 0.2, ease: 'power2.in' }).call(() => { currentLang = newLang; changeLanguage(newLang); }).to(translatableElements, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.02 }); }
     
     function isMobile() {
-        return window.matchMedia("(max-width: 800px)").matches;
+        return window.matchMedia("(max-width: 1024px)").matches;
     }
 
     function toggleSubMenu(menuId) {
@@ -143,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 gsap.to(subMenuToToggle, { maxHeight: subMenuToToggle.scrollHeight, duration: 0.4, ease: 'expo.out' });
             } else {
                 const listItemsToToggle = subMenuToToggle.querySelectorAll('li');
-                // === ИЗМЕНЕНИЕ: Упрощена логика для исправления центрирования ===
                 subMenuToToggle.style.display = 'block'; 
                 gsap.timeline()
                     .fromTo(subMenuToToggle, { opacity: 0, scale: 0.95, y: -20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: 'expo.out' })
@@ -177,8 +177,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initPreloader() {
-        preloaderVideo.addEventListener('ended', () => { gsap.timeline().to(preloader, { opacity: 0, scale: 1.05, duration: 1.2, ease: 'power3.inOut' }).set(preloader, { display: 'none' }).call(startMainPageAnimation, null, "-=0.8"); });
-        preloaderVideo.play().catch(() => { console.warn("Autoplay was blocked."); gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { preloader.style.display = 'none'; startMainPageAnimation(); } }); });
+        // ДОБАВЛЕНО: Таймаут на скрытие прелоадера, если autoplay заблокирован или видео зависло
+        const preloaderTimeout = setTimeout(() => {
+            if (preloader.style.display !== 'none') {
+                gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { 
+                    preloader.style.display = 'none'; 
+                    startMainPageAnimation(); 
+                } });
+            }
+        }, 5000); // 5 секунд - подкорректируй по длительности видео
+
+        preloaderVideo.addEventListener('ended', () => { 
+            clearTimeout(preloaderTimeout); // Отменяем таймаут, если видео закончилось
+            gsap.timeline().to(preloader, { opacity: 0, scale: 1.05, duration: 1.2, ease: 'power3.inOut' }).set(preloader, { display: 'none' }).call(startMainPageAnimation, null, "-=0.8"); 
+        });
+        preloaderVideo.play().catch(() => { 
+            clearTimeout(preloaderTimeout); // Отменяем таймаут, если поймали ошибку
+            console.warn("Autoplay was blocked."); 
+            gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { 
+                preloader.style.display = 'none'; 
+                startMainPageAnimation(); 
+            } }); 
+        });
     }
 
     // === КОМБИНИРОВАННАЯ АНИМАЦИЯ ИКОНОК С CANVAS ===
@@ -190,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ROTATION_FRAME_COUNT = 40;
     const BASE_ONE_WAY_DURATION = 1.5; // секунды
     const BASE_FULL_CYCLE_MS = BASE_ONE_WAY_DURATION * 2 * 1000;
-    const ROTATION_DURATION_MS = 1000; // 1.5 секунды для ротации
+    const ROTATION_DURATION_MS = 1000; // 1 секунда для ротации
 
     function startTicker() {
         if (ticker) return;
@@ -217,11 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         anim.mode = 'base';
                         anim.isPlaying = true;
                         
-                        // === ИЗМЕНЕНИЕ №1: УДАЛЕНА СТРОКА, КОТОРАЯ ВОССТАНАВЛИВАЛА ПАУЗУ ===
-                        // anim.baseStartTime = currentTime - anim.basePausedTime; // <--- ЭТА СТРОКА ВЫЗЫВАЛА РАССИНХРОН
-                        // Теперь, когда анимация вращения заканчивается, мы просто возвращаемся
-                        // к основному циклу, который никогда не останавливался.
-                        
                         const baseElapsed = (currentTime - anim.baseStartTime) % BASE_FULL_CYCLE_MS;
                         let baseCycleProgress = baseElapsed / BASE_FULL_CYCLE_MS;
                         let baseDirProgress;
@@ -239,12 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         frame = anim.rotationFrames[frameIndex];
                     }
                 }
-                // ... внутри функции ticker, в цикле animations.forEach
                 if (frame && anim.ctx) {
-                    // Важно: размер для очистки - это реальный размер canvas
                     anim.ctx.clearRect(0, 0, anim.canvas.width, anim.canvas.height);
-                    // А размер для рисования - это базовый размер до умножения на dpr
-                    anim.ctx.drawImage(frame, 0, 0, 70, 70); // Используем 70, т.к. iconSize=70
+                    anim.ctx.drawImage(frame, 0, 0, 70, 70);
                 }
             });
             requestAnimationFrame(ticker);
@@ -301,25 +313,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Создаем canvas
             const canvas = document.createElement('canvas');
-            // Устанавливаем реальный размер canvas в пикселях с учетом dpr
             canvas.width = iconSize * dpr;
             canvas.height = iconSize * dpr;
 
-            // Устанавливаем CSS-размер, который видит пользователь
             canvas.style.width = `${iconSize}px`;
             canvas.style.height = `${iconSize}px`;
 
             const ctx = canvas.getContext('2d');
 
-            // Масштабируем контекст, чтобы рисовать в координатах iconSize
             ctx.scale(dpr, dpr);
             iconContainer.appendChild(canvas);
             iconContainer.style.backgroundImage = 'none';
 
-            // Рисуем первый базовый кадр
             const firstFrame = validBaseFrames[0];
             if (firstFrame) {
-                // Рисуем изображение в масштабированных координатах
                 ctx.drawImage(firstFrame, 0, 0, iconSize, iconSize);
             }
 
@@ -363,7 +370,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 animations = loadedAnims.filter(anim => anim !== null);
                 if (animations.length > 0) {
                     startTicker();
-                    // Обработчик видимости
                     let visibilityHandler = null;
                     visibilityHandler = () => {
                         const now = performance.now();
@@ -390,7 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     };
                     document.addEventListener("visibilitychange", visibilityHandler);
-                    // Очистка при unload
                     window.addEventListener('beforeunload', () => {
                         document.removeEventListener("visibilitychange", visibilityHandler);
                     });
@@ -403,22 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const now = performance.now();
 
-        // === ИЗМЕНЕНИЕ №2: УДАЛЕН БЛОК, КОТОРЫЙ СТАВИЛ БАЗОВУЮ АНИМАЦИЮ НА ПАУЗУ ===
-        // Мы больше не останавливаем базовую анимацию. Она просто перестает
-        // отрисовываться на время, пока mode='rotating', но ее таймер продолжает идти.
-        /*
-        // Паузируем базовую анимацию
-        if (anim.mode === 'base') {
-            anim.basePausedTime = (now - anim.baseStartTime) % anim.fullCycleMs;
-            anim.isPlaying = false;
-        }
-        */
-
         anim.mode = 'rotating';
         anim.isReverse = isReverse;
         anim.rotationStartTime = now;
 
-        // GSAP анимация масштаба с overwrite для избежания конфликтов
         gsap.killTweensOf(iconContainer);
         const targetScale = isReverse ? 1 : 1.1;
         gsap.to(iconContainer, {
@@ -434,6 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
+    // ДОБАВЛЕНО: Функция debounce для предотвращения частых вызовов на resize
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
     }
 
     // === НАСТРОЙКА И ЗАПУСК ОБРАБОТЧИКОВ ===
@@ -472,12 +474,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Add to the end of DOMContentLoaded
-    window.addEventListener('resize', () => {
-        // Force relayout on resize (helps foldables)
+    // ДОБАВЛЕНО: Дебонс на resize с проверкой изменения режима (мобильный/десктоп)
+    window.addEventListener('resize', debounce(() => {
+        const currentIsMobile = isMobile();
+        if (currentIsMobile !== lastIsMobile) {
+            // Закрываем открытые меню только если режим изменился (например, на Z-Fold при развороте)
+            document.querySelectorAll('.button-container.active').forEach(active => {
+                toggleSubMenu(active.id);
+            });
+            lastIsMobile = currentIsMobile;
+        }
+        // Force relayout, но без частых мерцаний благодаря debounce
         document.body.style.display = 'none';
         setTimeout(() => { document.body.style.display = 'block'; }, 0);
-    });
+    }, 300)); // 300ms debounce - предотвращает периодические "обновления" на нестабильных устройствах
 
     // === ТОЧКА ВХОДА ===
     initPreloader();
