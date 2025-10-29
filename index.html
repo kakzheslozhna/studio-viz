@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Studio Technology Viz</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -25,7 +22,7 @@
 
     <!-- === ИЗМЕНЕНО: ПРЕЛОАДЕР С ОПТИМИЗИРОВАННЫМИ ВИДЕОФОРМАТАМИ === -->
     <div id="preloader">
-        <video id="preloader-video" playsinline muted autoplay>
+        <video id="preloader-video" playsinline muted autoplay preload="auto">
             <!-- Браузер выберет лучший формат: сначала более эффективный webm, потом универсальный mp4 -->
             <source src="media/logo_SVT02.webm" type="video/webm">
             <source src="media/logo_SVT02.mp4" type="video/mp4">
