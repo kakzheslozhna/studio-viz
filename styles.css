@@ -8,34 +8,28 @@
 * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
-    box-sizing: border-box;
 }
 
-html {
-    width: 100%;
-    height: 100%;
+/* === ИСПРАВЛЕНИЕ ДЛЯ MOBILE VIEWPORT === */
+html, body {
+    min-height: 100svh;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-}
-
-body {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
-    position: relative;
+    background-color: #000; /* Fallback to black to avoid white flashes */
 }
 
 #app-container {
     width: 100%;
-    height: 100%;
+    min-height: 100svh; /* Change to min-height for scrollable content */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    position: relative; /* Change from fixed to allow natural flow */
+    top: 0;
+    left: 0;
+    overflow: visible; /* Allow overflow on mobile */
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top); /* Handle iOS notch */
+    padding-bottom: env(safe-area-inset-bottom); /* Handle iOS bottom bar */
 }
 /* === КОНЕЦ ИСПРАВЛЕНИЯ === */
 
@@ -47,16 +41,19 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #000; /* Черный фон на случай задержки видео */
+    background-color: #000;
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 #preloader-video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Заполняет экран, сохраняя пропорции */
+    object-fit: cover;
+    /* Add will-change for smoother rendering */
+    will-change: transform;
 }
 
 /* === КЛАСС ДЛЯ СКРЫТИЯ КОНТЕНТА === */
@@ -68,14 +65,15 @@ body {
 
 body {
     font-family: 'NotoSans', sans-serif;
-    /* === ИЗМЕНЕНО: НОВЫЙ ФОН === */
     background-image: url('media/bg_horiz01.png');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    /* === КОНЕЦ ИЗМЕНЕНИЙ === */
-    display: flex; flex-direction: column; overflow: hidden; color: #444;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Default hidden, override on mobile */
+    color: #444;
 }
 
 .header { 
@@ -94,10 +92,49 @@ body {
 }
 
 .logo {
-    width: 150px; /* Размер для десктопа */
+    width: 150px;
     height: auto;
-    user-select: none;
-    pointer-events: none;
+    image-rendering: crisp-edges; /* Reduce pixelation if low-res */
+}
+
+@media (max-width: 1024px) { /* Increased from 800px to cover unfolded foldables */
+    body {
+        overflow: auto; /* Enable body scroll */
+        background-image: url('media/bg_verti01.png');
+    }
+
+    #app-container {
+        position: relative;
+        height: auto;
+        overflow: visible;
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .main-content {
+        padding-top: 5vh; /* Reduced for mobile */
+        justify-content: flex-start; /* Start from top, no centering */
+    }
+
+    .menu-buttons {
+        flex-direction: column;
+        gap: 15px;
+        width: 90%;
+        max-width: 450px;
+        margin-bottom: env(safe-area-inset-bottom); /* Extra space at bottom */
+    }
+
+    .sub-menu {
+        /* Ensure smooth expansion without shifting */
+        transition: max-height 0.5s ease-in-out;
+        overflow-y: auto; /* Scroll if too tall */
+        max-height: 0; /* Starts closed */
+    }
+
+    /* Improve touch feedback */
+    .sub-menu li:not(.sub-menu-header) {
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
 }
 /* === КОНЕЦ БЛОКА ИЗМЕНЕНИЙ ЛОГОТИПА === */
 
@@ -164,14 +201,14 @@ body {
     opacity: 0;
 }
 
-.main-content { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: flex-start;
-    padding-top: 5vh;
-    position: relative; 
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Change to flex-start globally, fine-tune on mobile */
+    padding-top: 10vh; /* Add top padding for breathing room */
+    position: relative;
 }
 
 /* === УДАЛЕНО: Блок стилей для .wave-background === */
