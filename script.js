@@ -100,13 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateAndChangeLanguage(newLang) { gsap.timeline().to(translatableElements, { opacity: 0, y: -5, duration: 0.2, ease: 'power2.in' }).call(() => { currentLang = newLang; changeLanguage(newLang); }).to(translatableElements, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.02 }); }
     
     function isMobile() {
-        // Улучшенная детекция мобильных устройств
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
-        const isSmallScreen = window.matchMedia("(max-width: 800px)").matches;
-        const isFoldableOpen = window.matchMedia("(max-height: 600px) and (max-width: 1024px)").matches;
-        
-        return isMobileDevice || isSmallScreen || isFoldableOpen;
+        return window.matchMedia("(max-width: 800px)").matches;
     }
 
     function toggleSubMenu(menuId) {
@@ -476,6 +470,13 @@ document.addEventListener('DOMContentLoaded', () => {
             gsap.to(icon, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)', overwrite: true });
             gsap.to(number, { y: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)', overwrite: true });
         });
+    });
+
+    // Add to the end of DOMContentLoaded
+    window.addEventListener('resize', () => {
+        // Force relayout on resize (helps foldables)
+        document.body.style.display = 'none';
+        setTimeout(() => { document.body.style.display = 'block'; }, 0);
     });
 
     // === ТОЧКА ВХОДА ===
