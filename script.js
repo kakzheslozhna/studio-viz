@@ -100,7 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function animateAndChangeLanguage(newLang) { gsap.timeline().to(translatableElements, { opacity: 0, y: -5, duration: 0.2, ease: 'power2.in' }).call(() => { currentLang = newLang; changeLanguage(newLang); }).to(translatableElements, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.02 }); }
     
     function isMobile() {
-        return window.matchMedia("(max-width: 800px)").matches;
+        // Улучшенная детекция мобильных устройств
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        const isSmallScreen = window.matchMedia("(max-width: 800px)").matches;
+        const isFoldableOpen = window.matchMedia("(max-height: 600px) and (max-width: 1024px)").matches;
+        
+        return isMobileDevice || isSmallScreen || isFoldableOpen;
     }
 
     function toggleSubMenu(menuId) {
