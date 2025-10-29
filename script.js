@@ -179,27 +179,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initPreloader() {
-        // Таймаут на скрытие прелоадера, если autoplay заблокирован или видео зависло
-        const preloaderTimeout = setTimeout(() => {
-            if (preloader.style.display !== 'none') {
-                gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { 
-                    preloader.style.display = 'none'; 
-                    startMainPageAnimation(); 
-                } });
-            }
-        }, 5000); // 5 секунд - подкорректируй по длительности видео
+        let animationHasStarted = false; // Наш флаг-защита
 
-        preloaderVideo.addEventListener('ended', () => { 
-            clearTimeout(preloaderTimeout); // Отменяем таймаут, если видео закончилось
-            gsap.timeline().to(preloader, { opacity: 0, scale: 1.05, duration: 1.2, ease: 'power3.inOut' }).set(preloader, { display: 'none' }).call(startMainPageAnimation, null, "-=0.8"); 
-        });
-        preloaderVideo.play().catch(() => { 
-            clearTimeout(preloaderTimeout); // Отменяем таймаут, если поймали ошибку
-            console.warn("Autoplay was blocked."); 
-            gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { 
-                preloader.style.display = 'none'; 
-                startMainPageAnimation(); 
-            } }); 
+        const showApp = () => {
+            // Если анимация уже была запущена, ничего не делаем
+            if (animationHasStarted) {
+                return;
+            }
+            animationHasStarted = true; // Устанавливаем флаг
+
+            // Отменяем таймер на случай, если его запустили, а сработало другое событие
+            clearTimeout(preloaderTimeout);
+
+            // Запускаем анимацию скрытия прелоадера и появления контента
+            gsap.timeline()
+                .to(preloader, { opacity: 0, scale: 1.05, duration: 1.2, ease: 'power3.inOut' })
+                .set(preloader, { display: 'none' })
+                .call(startMainPageAnimation, null, "-=0.8");
+        };
+
+        // Устанавливаем страховочный таймер. Если он сработает, он вызовет showApp
+        const preloaderTimeout = setTimeout(showApp, 7000); // Увеличил до 7 секунд на всякий случай
+
+        // Вешаем обработчик на окончание видео. Он тоже вызовет showApp
+        preloaderVideo.addEventListener('ended', showApp);
+
+        // Пытаемся запустить видео
+        preloaderVideo.play().catch(() => {
+            console.warn("Autoplay was blocked.");
+            // Если автоплей заблокирован, немедленно вызываем showApp
+            showApp();
         });
     }
 
