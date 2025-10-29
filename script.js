@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // === ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ ===
     let currentLang = 'ru';
-    let lastIsMobile = isMobile(); // ДОБАВЛЕНО: Для отслеживания изменений режима на resize
+    let lastIsMobile = isMobile(); // Для отслеживания изменений режима на resize
+    let lastWidth = window.innerWidth; // ДОБАВЛЕНО: Для проверки реального изменения размера
+    let lastHeight = window.innerHeight;
 
     // === ИЗМЕНЕНО: ОБНОВЛЕННЫЙ ОБЪЕКТ ПЕРЕВОДОВ ===
     const translations = {
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function initPreloader() {
-        // ДОБАВЛЕНО: Таймаут на скрытие прелоадера, если autoplay заблокирован или видео зависло
+        // Таймаут на скрытие прелоадера, если autoplay заблокирован или видео зависло
         const preloaderTimeout = setTimeout(() => {
             if (preloader.style.display !== 'none') {
                 gsap.to(preloader, { opacity: 0, duration: 1, onComplete: () => { 
@@ -339,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 baseFrameCount: validBaseFrames.length,
                 rotFrameCount: validRotFrames.length,
                 mode: 'base',
-                baseStartTime: performance.now(),
+                baseStartTime: 0, // ИЗМЕНЕНО: Устанавливаем 0, синхронизируем позже
                 basePausedTime: 0,
                 fullCycleMs: BASE_FULL_CYCLE_MS,
                 isPlaying: true,
@@ -348,7 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 isMobile: isMobileDevice
             };
 
-            animations.push(anim);
             return anim;
         }).catch(error => {
             console.error(`Ошибка при предзагрузке изображений для ${menuId}:`, error);
@@ -369,7 +370,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(loadedAnims => {
                 animations = loadedAnims.filter(anim => anim !== null);
                 if (animations.length > 0) {
+                    // ИЗМЕНЕНО: Синхронизируем стартовое время для всех базовых анимаций после загрузки всех кадров
+                    const now = performance.now();
+                    animations.forEach(anim => {
+                        anim.baseStartTime = now;
+                    });
                     startTicker();
+                    // Обработчик видимости
                     let visibilityHandler = null;
                     visibilityHandler = () => {
                         const now = performance.now();
@@ -474,20 +481,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ДОБАВЛЕНО: Дебонс на resize с проверкой изменения режима (мобильный/десктоп)
+    // ИЗМЕНЕНО: Дебонс на resize с проверкой реального изменения размера (для foldables) и без мерцания
     window.addEventListener('resize', debounce(() => {
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
         const currentIsMobile = isMobile();
-        if (currentIsMobile !== lastIsMobile) {
-            // Закрываем открытые меню только если режим изменился (например, на Z-Fold при развороте)
-            document.querySelectorAll('.button-container.active').forEach(active => {
-                toggleSubMenu(active.id);
-            });
+
+        if (currentWidth !== lastWidth || currentHeight !== lastHeight) {
+            // Только если размер изменился (игнорируем ложные resize от address bar/scroll на мобильных)
+            if (currentIsMobile !== lastIsMobile) {
+                // Закрываем открытые меню, если режим изменился
+                document.querySelectorAll('.button-container.active').forEach(active => {
+                    toggleSubMenu(active.id);
+                });
+            }
+            // ИЗМЕНЕНО: Убрано display: none/block, чтобы избежать мерцания. Вместо этого мягкий reflow
+            window.dispatchEvent(new Event('orientationchange')); // Если нужно, или просто ничего
             lastIsMobile = currentIsMobile;
+            lastWidth = currentWidth;
+            lastHeight = currentHeight;
         }
-        // Force relayout, но без частых мерцаний благодаря debounce
-        document.body.style.display = 'none';
-        setTimeout(() => { document.body.style.display = 'block'; }, 0);
-    }, 300)); // 300ms debounce - предотвращает периодические "обновления" на нестабильных устройствах
+    }, 300)); // 300ms debounce
 
     // === ТОЧКА ВХОДА ===
     initPreloader();
