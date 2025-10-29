@@ -248,23 +248,21 @@ body {
 
 .sub-menu li {
     position: relative;
-    display: flex;
-    justify-content: center; /* ИЗМЕНЕНО: Центрирование для выравнивания с названием меню */
-    align-items: center;
-    gap: 10px;
+    /* УДАЛЕНЫ СВОЙСТВА FLEXBOX, КОТОРЫЕ СОЗДАЮТ ПРОБЛЕМУ */
     margin: 0;
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 14px;
     font-weight: 500;
-    color: #fff; /* ИЗМЕНЕНО: Цвет по умолчанию - белый */
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4); /* ИЗМЕНЕНО: Тень для читаемости */
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     line-height: 1.2;
     cursor: pointer;
     background: transparent;
     transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
     overflow: hidden;
     break-inside: avoid;
+    /* Текст будет центрироваться благодаря 'text-align: center' у родителя (.sub-menu) */
 }
 
 .sub-menu li:not(.sub-menu-header):hover {
